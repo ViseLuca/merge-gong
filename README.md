@@ -77,3 +77,7 @@ The whole app is a single file: [`Sources/main.swift`](Sources/main.swift).
 ## Start at login
 
 System Settings → General → Login Items → **+** → pick `Merge Gong.app`.
+
+## License
+
+[MIT](LICENSE)
