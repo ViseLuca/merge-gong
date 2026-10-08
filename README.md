@@ -23,6 +23,19 @@ No tokens are stored by the app.
 
 ## Install
 
+### Download (no Xcode needed)
+
+1. Download **[MergeGong.zip](https://github.com/ViseLuca/merge-gong/releases/latest/download/MergeGong.zip)** from the [latest release](https://github.com/ViseLuca/merge-gong/releases/latest).
+2. Unzip it and move `Merge Gong.app` to `Applications`.
+3. The app is ad-hoc signed, not notarized, so macOS blocks it on first launch. Unblock it once with:
+
+   ```sh
+   xattr -dr com.apple.quarantine "/Applications/Merge Gong.app"
+   ```
+
+   or try to open it, then go to System Settings → Privacy & Security → **Open Anyway**.
+4. Open it: a 🔔 appears in the menu bar.
+
 ### From source
 
 ```sh
@@ -40,15 +53,6 @@ This needs the Xcode Command Line Tools (`xcode-select --install`).
 | `./build.sh`         | Builds `build/Merge Gong.app` (universal binary)          |
 | `./build.sh install` | Builds, copies to `~/Applications` and launches it        |
 | `./build.sh dist`    | Builds and zips it into `build/MergeGong.zip` for sharing |
-
-### From a shared zip
-
-The app is ad-hoc signed, not notarized, so macOS will refuse to open a downloaded copy.
-After unzipping, either right-click the app → **Open**, or run:
-
-```sh
-xattr -dr com.apple.quarantine "Merge Gong.app"
-```
 
 ## Usage
 
