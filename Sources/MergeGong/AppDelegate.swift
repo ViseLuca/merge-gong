@@ -34,6 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             connect()
         }
         updates.start()
+        LoginItem.restore(wanted: settings.openAtLogin)
     }
 
     private var enabled: Set<ProviderKind> {
@@ -43,7 +44,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var menuState: MenuState {
         MenuState(watched: settings.repos, knownRepos: knownRepos, enabled: enabled, branch: settings.branch,
                   repoErrors: repoErrors, providerErrors: providerErrors, recent: tracker.recent,
-                  version: updates.version, update: updates.state)
+                  version: updates.version, update: updates.state,
+                  openAtLogin: LoginItem.isAvailable ? LoginItem.isEnabled : nil)
     }
 
     // MARK: Connecting
@@ -213,5 +215,19 @@ extension AppDelegate: StatusMenuActions {
 
     func installUpdate() {
         if case .available(let release) = updates.state { updates.install(release) }
+    }
+
+    func toggleOpenAtLogin() {
+        let enable = !LoginItem.isEnabled
+        do {
+            try LoginItem.setEnabled(enable)
+            settings.openAtLogin = enable
+        } catch {
+            return Prompt.message(L10n.loginItemFailed, info: error.localizedDescription)
+        }
+        if enable, LoginItem.needsApproval {
+            Prompt.message(L10n.loginNeedsApproval, info: L10n.loginNeedsApprovalInfo)
+            LoginItem.openSystemSettings()
+        }
     }
 }

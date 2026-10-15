@@ -73,6 +73,7 @@ Everything lives in the 🔔 menu bar icon (the menu is in Italian, gong is univ
 | **Servizi collegati**       | Connect, reconfigure or disconnect each service.       |
 | **Filtra branch…**          | Only gong for merges into this base branch. Empty = all.       |
 | **Suona il gong**           | Test strike (⌘G).                                              |
+| **Apri al login**           | Tick to start Merge Gong when you log in.                      |
 | **Controlla aggiornamenti…** | Checks GitHub for a newer release; becomes **⬆️ Aggiorna alla x.y.z** when there is one. |
 | **Ultimi merge**            | Latest merged PRs across watched repos. Click to open.         |
 | **Esci**                    | Quit (⌘Q).                                                     |
@@ -128,10 +129,6 @@ A Swift package with no dependencies:
 | `Tests/MergeGongCoreTests` | API decoding, merge tracking, settings migration.                       |
 
 Adding a service means one new `Provider` in `Sources/MergeGongCore/Providers` and a case in `ProviderKind`.
-
-## Start at login
-
-System Settings → General → Login Items → **+** → pick `Merge Gong.app`.
 
 ## License
 

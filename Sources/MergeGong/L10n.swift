@@ -22,6 +22,7 @@ enum L10n {
     static let disconnect = "Scollega"
     static let filterBranch = "Filtra branch…"
     static let strike = "Suona il gong"
+    static let openAtLogin = "Apri al login"
     static let quit = "Esci"
 
     // Prompts
@@ -41,6 +42,11 @@ enum L10n {
     static func connectionFailed(_ kind: ProviderKind) -> String { "Connessione a \(kind.displayName) non riuscita" }
     static func disconnectTitle(_ kind: ProviderKind) -> String { "Scollegare \(kind.displayName)?" }
     static let disconnectInfo = "Il token viene tolto dal Portachiavi e i repo di questo servizio non vengono più ascoltati."
+
+    // Login item
+    static let loginItemFailed = "Impossibile cambiare l'apertura al login"
+    static let loginNeedsApproval = "Da attivare in Impostazioni di Sistema"
+    static let loginNeedsApprovalInfo = "Merge Gong è negli Elementi login ma è spento. Accendilo nella finestra che si apre."
 
     // Updates
     static func checkUpdates(_ version: String) -> String { "Controlla aggiornamenti… (\(version))" }

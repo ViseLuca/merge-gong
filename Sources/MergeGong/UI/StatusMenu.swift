@@ -10,6 +10,7 @@ protocol StatusMenuActions: AnyObject {
     func testGong()
     func checkForUpdates()
     func installUpdate()
+    func toggleOpenAtLogin()
 }
 
 /// What the menu shows, read each time it opens.
@@ -24,6 +25,8 @@ struct MenuState {
     /// The running version; nil when not running from an app bundle.
     var version: String?
     var update: UpdateController.State
+    /// Nil when the app cannot be a login item.
+    var openAtLogin: Bool?
 }
 
 /// The 🔔 menu, rebuilt every time it opens.
@@ -71,6 +74,11 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         menu.addItem(action(L10n.filterBranch) { [weak self] in self?.actions?.editBranch() })
         menu.addItem(action(L10n.strike, key: "g") { [weak self] in self?.actions?.testGong() })
         menu.addItem(.separator())
+        if let openAtLogin = state.openAtLogin {
+            let item = action(L10n.openAtLogin) { [weak self] in self?.actions?.toggleOpenAtLogin() }
+            item.state = openAtLogin ? .on : .off
+            menu.addItem(item)
+        }
         if let item = updateItem(state) { menu.addItem(item) }
         let quit = NSMenuItem(title: L10n.quit, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quit.target = NSApp
