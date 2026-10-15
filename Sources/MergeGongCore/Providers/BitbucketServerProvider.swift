@@ -9,14 +9,6 @@ public struct BitbucketServerProvider: Provider {
         client = HTTPClient(baseURL: baseURL, authorization: HTTPClient.bearer(token))
     }
 
-    /// The server address as typed by the user, with the trailing slash relative paths need.
-    public static func baseURL(from address: String) -> URL? {
-        let trimmed = address.trimmingCharacters(in: .whitespaces)
-        guard let url = URL(string: trimmed.hasSuffix("/") ? trimmed : trimmed + "/"),
-              url.scheme == "https" || url.scheme == "http", url.host != nil else { return nil }
-        return url
-    }
-
     public func merges(repo path: String) throws -> [PullRequest] {
         let parts = path.split(separator: "/")
         guard parts.count == 2 else { throw MergeGongError("Repo non valido: \(path)") }

@@ -15,19 +15,26 @@ public enum ProviderFactory {
         switch kind {
         case .github:
             return GitHubProvider()
+        case .gitlab:
+            return GitLabProvider(baseURL: try serverURL(kind, settings: settings), token: try token(kind, secrets: secrets))
         case .bitbucketCloud:
             guard let email = settings.account(for: kind), let token = try secrets.token(for: kind) else {
                 throw MergeGongError("\(kind.displayName) non configurato")
             }
             return BitbucketCloudProvider(email: email, token: token)
         case .bitbucketServer:
-            guard let address = settings.account(for: kind), let token = try secrets.token(for: kind) else {
-                throw MergeGongError("\(kind.displayName) non configurato")
-            }
-            guard let baseURL = BitbucketServerProvider.baseURL(from: address) else {
-                throw MergeGongError("URL del server non valido: \(address)")
-            }
-            return BitbucketServerProvider(baseURL: baseURL, token: token)
+            return BitbucketServerProvider(baseURL: try serverURL(kind, settings: settings), token: try token(kind, secrets: secrets))
         }
+    }
+
+    private static func serverURL(_ kind: ProviderKind, settings: Settings) throws -> URL {
+        guard let address = settings.account(for: kind) else { throw MergeGongError("\(kind.displayName) non configurato") }
+        guard let url = HTTPClient.baseURL(from: address) else { throw MergeGongError("URL del server non valido: \(address)") }
+        return url
+    }
+
+    private static func token(_ kind: ProviderKind, secrets: SecretStore) throws -> String {
+        guard let token = try secrets.token(for: kind) else { throw MergeGongError("\(kind.displayName) non configurato") }
+        return token
     }
 }

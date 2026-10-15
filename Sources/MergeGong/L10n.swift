@@ -47,6 +47,7 @@ extension ProviderKind {
     var repoHint: String {
         switch self {
         case .github: "owner/nome"
+        case .gitlab: "gruppo/progetto"
         case .bitbucketCloud: "workspace/repo"
         case .bitbucketServer: "PROGETTO/repo"
         }
@@ -55,6 +56,7 @@ extension ProviderKind {
     var accountLabel: String {
         switch self {
         case .github: ""
+        case .gitlab: "URL dell'istanza"
         case .bitbucketCloud: "Email Atlassian"
         case .bitbucketServer: "URL del server"
         }
@@ -63,14 +65,21 @@ extension ProviderKind {
     var accountHint: String {
         switch self {
         case .github: ""
+        case .gitlab: "https://gitlab.com"
         case .bitbucketCloud: "nome@azienda.it"
         case .bitbucketServer: "https://bitbucket.azienda.it"
         }
     }
 
+    /// The account field's starting value when nothing is saved yet.
+    var defaultAccount: String? {
+        self == .gitlab ? "https://gitlab.com" : nil
+    }
+
     var tokenLabel: String {
         switch self {
         case .github: ""
+        case .gitlab: "Personal access token"
         case .bitbucketCloud: "API token"
         case .bitbucketServer: "HTTP access token"
         }
@@ -80,6 +89,8 @@ extension ProviderKind {
         switch self {
         case .github:
             "Usa il login di gh (brew install gh, poi gh auth login)."
+        case .gitlab:
+            "Lascia https://gitlab.com o indica l'URL della tua istanza self-managed. Crea un personal access token con scope read_api (Preferenze → Access tokens). Il token resta nel Portachiavi; puoi anche indicare un riferimento 1Password op://…"
         case .bitbucketCloud:
             "Crea un API token con scope su id.atlassian.com → Sicurezza → Token API, scegliendo Bitbucket e gli scope read:repository:bitbucket, read:pullrequest:bitbucket, read:workspace:bitbucket e read:user:bitbucket. Il token resta nel Portachiavi; puoi anche indicare un riferimento 1Password op://…"
         case .bitbucketServer:
@@ -89,8 +100,8 @@ extension ProviderKind {
 }
 
 extension Merge {
-    /// `@login` on GitHub, the display name on Bitbucket.
+    /// `@username` on GitHub and GitLab, the display name on Bitbucket.
     var authorLabel: String {
-        repo.provider == .github ? "@\(pr.author)" : pr.author
+        [.github, .gitlab].contains(repo.provider) ? "@\(pr.author)" : pr.author
     }
 }
