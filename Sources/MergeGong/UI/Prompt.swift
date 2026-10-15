@@ -29,9 +29,10 @@ enum Prompt {
         alert.accessoryView = stack(providers.count > 1 ? [picker, field] : [field])
         alert.window.initialFirstResponder = field
         guard alert.runModal() == .alertFirstButtonReturn else { return nil }
+        let provider = providers[picker.indexOfSelectedItem]
         let path = field.stringValue.trimmingCharacters(in: .whitespaces)
-        guard RepoRef.isValidPath(path) else { return nil }
-        return RepoRef(provider: providers[picker.indexOfSelectedItem], path: path)
+        guard RepoRef.isValidPath(path, for: provider) else { return nil }
+        return RepoRef(provider: provider, path: path)
     }
 
     static func message(_ title: String, info: String) {

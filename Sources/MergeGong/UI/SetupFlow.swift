@@ -1,7 +1,7 @@
 import AppKit
 import MergeGongCore
 
-/// What the user typed to connect a Bitbucket service. An empty token means "keep the saved one".
+/// What the user typed to connect a token-based service. An empty token means "keep the saved one".
 struct Credentials {
     let account: String
     let token: String
@@ -22,11 +22,11 @@ enum SetupFlow {
         return Set(zip(ProviderKind.allCases, boxes).filter { $0.1.state == .on }.map(\.0))
     }
 
-    /// Account and token form for a Bitbucket service; nil if cancelled. Asks again while a field is missing.
+    /// Account and token form for a token-based service; nil if cancelled. Asks again while a field is missing.
     static func askCredentials(for kind: ProviderKind, account: String?, hasToken: Bool) -> Credentials? {
         let accountField = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
         accountField.placeholderString = kind.accountHint
-        accountField.stringValue = account ?? ""
+        accountField.stringValue = account ?? kind.defaultAccount ?? ""
         let tokenField = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
         tokenField.placeholderString = hasToken ? L10n.tokenKeep : L10n.tokenHint
 

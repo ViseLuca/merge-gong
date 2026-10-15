@@ -2,12 +2,14 @@ import Foundation
 
 public enum ProviderKind: String, CaseIterable {
     case github
+    case gitlab
     case bitbucketCloud = "bitbucket"
     case bitbucketServer = "bitbucket-dc"
 
     public var displayName: String {
         switch self {
         case .github: "GitHub"
+        case .gitlab: "GitLab"
         case .bitbucketCloud: "Bitbucket Cloud"
         case .bitbucketServer: "Bitbucket Data Center"
         }
@@ -16,6 +18,7 @@ public enum ProviderKind: String, CaseIterable {
     public var shortName: String {
         switch self {
         case .github: "GH"
+        case .gitlab: "GL"
         case .bitbucketCloud: "BB"
         case .bitbucketServer: "BB DC"
         }
@@ -27,8 +30,8 @@ public enum ProviderKind: String, CaseIterable {
     }
 }
 
-/// A repo on a given service. `path` is `owner/name` on GitHub, `workspace/slug` on Bitbucket Cloud
-/// and `PROJECT/slug` on Bitbucket Data Center.
+/// A repo on a given service. `path` is `owner/name` on GitHub, `group/subgroup/project` on GitLab,
+/// `workspace/slug` on Bitbucket Cloud and `PROJECT/slug` on Bitbucket Data Center.
 public struct RepoRef: Hashable {
     public let provider: ProviderKind
     public let path: String
@@ -49,7 +52,7 @@ public struct RepoRef: Hashable {
             self.init(provider: provider, path: parts[1])
         default: return nil
         }
-        guard Self.isValidPath(path) else { return nil }
+        guard Self.isValidPath(path, for: provider) else { return nil }
     }
 
     public var key: String { "\(provider.rawValue):\(path)" }
@@ -57,8 +60,9 @@ public struct RepoRef: Hashable {
     /// The repo name without its owner.
     public var name: String { String(path.split(separator: "/").last ?? "") }
 
-    /// `owner/name`; Data Center personal projects start with `~`.
-    public static func isValidPath(_ path: String) -> Bool {
-        path.range(of: #"^~?[\w.-]+/[\w.-]+$"#, options: .regularExpression) != nil
+    /// `owner/name`; Data Center personal projects start with `~`, GitLab projects can sit in nested subgroups.
+    public static func isValidPath(_ path: String, for provider: ProviderKind) -> Bool {
+        let pattern = provider == .gitlab ? #"^[\w.-]+(/[\w.-]+)+$"# : #"^~?[\w.-]+/[\w.-]+$"#
+        return path.range(of: pattern, options: .regularExpression) != nil
     }
 }

@@ -25,7 +25,7 @@ public final class Settings {
         set { defaults.set(newValue.map { $0.map(\.rawValue).sorted() }, forKey: "providers") }
     }
 
-    /// The non-secret half of the login: the Atlassian email for Bitbucket Cloud, the server URL for Data Center.
+    /// The non-secret half of the login: the Atlassian email for Bitbucket Cloud, the server URL for GitLab and Data Center.
     public func account(for kind: ProviderKind) -> String? {
         defaults.string(forKey: "account.\(kind.rawValue)")
     }

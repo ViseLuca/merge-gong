@@ -12,6 +12,7 @@ struct SettingsTests {
 
     @Test func repoKeysRoundTrip() {
         for repo in [RepoRef(provider: .github, path: "acme/app"),
+                     RepoRef(provider: .gitlab, path: "acme/platform/api"),
                      RepoRef(provider: .bitbucketCloud, path: "acme/api"),
                      RepoRef(provider: .bitbucketServer, path: "~LUCA/dots")] {
             #expect(RepoRef(key: repo.key) == repo)
@@ -23,8 +24,15 @@ struct SettingsTests {
     }
 
     @Test func invalidKeysAreDropped() {
-        #expect(RepoRef(key: "gitlab:acme/app") == nil)
+        #expect(RepoRef(key: "gitea:acme/app") == nil)
         #expect(RepoRef(key: "bitbucket:no-slash") == nil)
+        #expect(RepoRef(key: "gitlab:no-slash") == nil)
+    }
+
+    @Test func onlyGitLabAllowsSubgroups() {
+        #expect(RepoRef.isValidPath("acme/platform/api", for: .gitlab))
+        #expect(!RepoRef.isValidPath("acme/platform/api", for: .github))
+        #expect(!RepoRef.isValidPath("~LUCA/dots", for: .gitlab))
     }
 
     @Test func migratesGitHubOnlySettings() {

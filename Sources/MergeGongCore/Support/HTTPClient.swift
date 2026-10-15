@@ -13,6 +13,14 @@ struct HTTPClient {
         "Bearer \(token)"
     }
 
+    /// A self-hosted server's address as typed by the user, with the trailing slash relative paths need.
+    static func baseURL(from address: String) -> URL? {
+        let trimmed = address.trimmingCharacters(in: .whitespaces)
+        guard let url = URL(string: trimmed.hasSuffix("/") ? trimmed : trimmed + "/"),
+              url.scheme == "https" || url.scheme == "http", url.host != nil else { return nil }
+        return url
+    }
+
     /// `path` is relative to `baseURL` and may carry a query string.
     func get(_ path: String) throws -> Data {
         guard let url = URL(string: path, relativeTo: baseURL) else {

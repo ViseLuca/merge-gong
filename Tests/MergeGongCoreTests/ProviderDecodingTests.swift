@@ -80,9 +80,42 @@ struct ProviderDecodingTests {
         #expect(try BitbucketServerProvider.decodeRepos(Data(json.utf8)) == ["APP/core", "~LUCA/dots"])
     }
 
-    @Test func bitbucketServerBaseURL() {
-        #expect(BitbucketServerProvider.baseURL(from: "https://git.acme.it")?.absoluteString == "https://git.acme.it/")
-        #expect(BitbucketServerProvider.baseURL(from: " https://acme.it/bitbucket/ ")?.absoluteString == "https://acme.it/bitbucket/")
-        #expect(BitbucketServerProvider.baseURL(from: "git.acme.it") == nil)
+    @Test func serverBaseURL() {
+        #expect(HTTPClient.baseURL(from: "https://git.acme.it")?.absoluteString == "https://git.acme.it/")
+        #expect(HTTPClient.baseURL(from: " https://acme.it/bitbucket/ ")?.absoluteString == "https://acme.it/bitbucket/")
+        #expect(HTTPClient.baseURL(from: "git.acme.it") == nil)
+    }
+
+    @Test func gitLabMergeRequests() throws {
+        let json = """
+        [
+          {"id": 9001, "iid": 42, "title": "Add gong", "state": "merged",
+           "author": {"username": "luca", "name": "Luca Visentin"}, "target_branch": "main",
+           "web_url": "https://gitlab.com/acme/app/-/merge_requests/42",
+           "merged_at": "2026-10-01T09:30:00.123Z", "updated_at": "2026-10-01T09:31:00.456Z"},
+          {"id": 9000, "iid": 41, "title": "Old merge", "state": "merged",
+           "author": {"username": "luca", "name": "Luca Visentin"}, "target_branch": "env/prod",
+           "web_url": "https://gitlab.com/acme/app/-/merge_requests/41",
+           "merged_at": null, "updated_at": "2026-09-01T08:00:00.000Z"}
+        ]
+        """
+        let prs = try GitLabProvider.decodeMerges(Data(json.utf8))
+        #expect(prs == [
+            PullRequest(number: 42, title: "Add gong", author: "luca", branch: "main",
+                        url: URL(string: "https://gitlab.com/acme/app/-/merge_requests/42"),
+                        mergedAt: try #require(parseISODate("2026-10-01T09:30:00Z"))),
+            PullRequest(number: 41, title: "Old merge", author: "luca", branch: "env/prod",
+                        url: URL(string: "https://gitlab.com/acme/app/-/merge_requests/41"),
+                        mergedAt: try #require(parseISODate("2026-09-01T08:00:00Z"))),
+        ])
+    }
+
+    @Test func gitLabRepos() throws {
+        let json = #"[{"id": 1, "path_with_namespace": "acme/app"}, {"id": 2, "path_with_namespace": "acme/platform/api"}]"#
+        #expect(try GitLabProvider.decodeRepos(Data(json.utf8)) == ["acme/app", "acme/platform/api"])
+    }
+
+    @Test func gitLabProjectIDEncodesSubgroups() {
+        #expect(GitLabProvider.projectID("acme/platform/api.v2") == "acme%2Fplatform%2Fapi.v2")
     }
 }

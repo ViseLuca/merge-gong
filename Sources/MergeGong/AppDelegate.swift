@@ -115,7 +115,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Alerts that `kind` could not connect; for Bitbucket, offers to fix the credentials.
+    /// Alerts that `kind` could not connect; for token-based services, offers to fix the credentials.
     private func reportFailure(_ kind: ProviderKind) {
         let message = providerErrors[kind] ?? ""
         guard kind != .github else { return Prompt.message(L10n.connectionFailed(kind), info: message) }

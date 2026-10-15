@@ -4,7 +4,7 @@ A macOS menu bar app that strikes a gong every time a pull request gets merged.
 
 Because shipping deserves ceremony.
 
-Works with **GitHub**, **Bitbucket Cloud** and **Bitbucket Data Center**, alone or together.
+Works with **GitHub**, **GitLab** (gitlab.com or self-managed), **Bitbucket Cloud** and **Bitbucket Data Center**, alone or together.
 
 When a PR is merged on one of the repos you watch, Merge Gong plays a synthesized gong
 (no audio files, pure math), drops a shaking **GONG!** popup at the top of the screen,
@@ -18,11 +18,12 @@ and lights up the menu bar. Click the popup to open the PR.
 | Service                   | What you need                                                                                                                              |
 |---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | **GitHub**                | [GitHub CLI](https://cli.github.com) logged in: `brew install gh && gh auth login`. Merge Gong goes through `gh` and stores no GitHub token. |
+| **GitLab**                | The instance URL (`https://gitlab.com` or your self-managed one) and a [personal access token](https://gitlab.com/-/user_settings/personal_access_tokens) with the `read_api` scope. |
 | **Bitbucket Cloud**       | Your Atlassian email and an [API token with scopes](https://id.atlassian.com/manage-profile/security/api-tokens), choosing Bitbucket and the scopes `read:repository:bitbucket`, `read:pullrequest:bitbucket`, `read:workspace:bitbucket`, `read:user:bitbucket`. |
 | **Bitbucket Data Center** | The server URL and an HTTP access token (profile → Manage account → HTTP access tokens) with repository read permission.                   |
 
-Bitbucket tokens are kept in the macOS Keychain (service `merge-gong`). Instead of the token you can
-enter a 1Password reference such as `op://Engineering/Bitbucket/token`: Merge Gong stores only the
+GitLab and Bitbucket tokens are kept in the macOS Keychain (service `merge-gong`). Instead of the token you can
+enter a 1Password reference such as `op://Engineering/GitLab/token`: Merge Gong stores only the
 reference and reads the secret with the [1Password CLI](https://developer.1password.com/docs/cli/) (`op`)
 when it connects.
 
@@ -39,7 +40,7 @@ when it connects.
    ```
 
    or try to open it, then go to System Settings → Privacy & Security → **Open Anyway**.
-4. Open it: a 🔔 appears in the menu bar and asks what to connect (GitHub, Bitbucket Cloud,
+4. Open it: a 🔔 appears in the menu bar and asks what to connect (GitHub, GitLab, Bitbucket Cloud,
    Bitbucket Data Center, any mix). You can change it later from **Servizi collegati**.
 
 ### From source
@@ -68,8 +69,8 @@ Everything lives in the 🔔 menu bar icon (the menu is in Italian, gong is univ
 | Menu item                   | Meaning                                                        |
 |-----------------------------|----------------------------------------------------------------|
 | **Repo da ascoltare**       | Tick the repos to watch. Lists your recent repos per service.  |
-| ↳ **Aggiungi altro repo…**  | Add any repo by name (`owner/name`, `workspace/repo`, `PROJECT/repo`). |
-| **Servizi collegati**       | Connect, reconfigure or disconnect GitHub and Bitbucket.       |
+| ↳ **Aggiungi altro repo…**  | Add any repo by name (`owner/name`, `group/subgroup/project`, `workspace/repo`, `PROJECT/repo`). |
+| **Servizi collegati**       | Connect, reconfigure or disconnect each service.       |
 | **Filtra branch…**          | Only gong for merges into this base branch. Empty = all.       |
 | **Suona il gong**           | Test strike (⌘G).                                              |
 | **Ultimi merge**            | Latest merged PRs across watched repos. Click to open.         |
@@ -84,6 +85,7 @@ Errors (missing `gh`, wrong token, unknown repo, …) show up in the menu with a
   | Service               | Call                                                                 | Every | Limit                                 |
   |-----------------------|----------------------------------------------------------------------|-------|---------------------------------------|
   | GitHub                | `gh api repos/<owner>/<name>/pulls?state=closed…`                   | 30 s  | 5,000/h: ~120/h per repo, no worries  |
+  | GitLab                | `GET /api/v4/projects/<group%2Fproject>/merge_requests?state=merged` | 30 s  | gitlab.com 2,000/min; self-managed set by your server |
   | Bitbucket Cloud       | `GET /2.0/repositories/<workspace>/<repo>/pullrequests?state=MERGED` | 60 s  | 1,000/h: about 16 repos at most       |
   | Bitbucket Data Center | `GET /rest/api/1.0/projects/<KEY>/repos/<repo>/pull-requests?state=MERGED` | 30 s | set by your server            |
 
