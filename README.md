@@ -92,6 +92,8 @@ Errors (missing `gh`, wrong token, unknown repo, …) show up in the menu with a
 - Settings from the GitHub-only version are migrated: your watched repos keep working.
 - The app is ad-hoc signed, so after installing a new build macOS may ask again to let it read its Keychain item.
 
+![img.png](img.png)
+
 ## Project layout
 
 A Swift package with no dependencies:
