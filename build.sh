@@ -2,7 +2,7 @@
 # Builds build/Merge Gong.app (universal, macOS 13+).
 #   ./build.sh          build only
 #   ./build.sh install  build and copy into ~/Applications
-#   ./build.sh dist     build and zip into build/MergeGong.zip, ready to share
+#   ./build.sh dist 1.2.0  build version 1.2.0 and zip it into build/MergeGong.zip, ready for a release
 #   ./build.sh test     run the tests
 set -eu
 cd "$(dirname "$0")"
@@ -19,6 +19,15 @@ if [ "${1:-}" = test ]; then
     -Xlinker -rpath -Xlinker "$FW" -Xlinker -rpath -Xlinker "$LIB"
 fi
 
+# The version the app reports, which the updater compares with the GitHub release tags.
+# Local builds take the latest tag; a release names its own, as its tag does not exist yet.
+if [ "${1:-}" = dist ]; then
+  VERSION="${2:?usage: ./build.sh dist <version>, e.g. ./build.sh dist 1.0.4}"
+else
+  VERSION="$(git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)"
+fi
+VERSION="${VERSION#v}"
+
 APP="build/Merge Gong.app"
 BIN="$APP/Contents/MacOS/MergeGong"
 mkdir -p "$APP/Contents/MacOS"
@@ -33,8 +42,9 @@ lipo -create \
   -output "$BIN"
 
 cp Info.plist "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
 codesign --force --sign - "$APP"
-echo "Built $APP"
+echo "Built $APP $VERSION"
 
 case "${1:-}" in
   install)
@@ -46,5 +56,6 @@ case "${1:-}" in
   dist)
     ditto -c -k --keepParent "$APP" build/MergeGong.zip
     echo "Ready to share: build/MergeGong.zip"
+    echo "Publish it with: gh release create $VERSION build/MergeGong.zip"
     ;;
 esac
