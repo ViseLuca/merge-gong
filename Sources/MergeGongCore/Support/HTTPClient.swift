@@ -3,7 +3,8 @@ import Foundation
 /// Blocking JSON GETs against one API. Callers run on a background queue.
 struct HTTPClient {
     let baseURL: URL
-    let authorization: String
+    /// Nil for public endpoints.
+    let authorization: String?
 
     static func basic(user: String, password: String) -> String {
         "Basic " + Data("\(user):\(password)".utf8).base64EncodedString()
@@ -26,6 +27,10 @@ struct HTTPClient {
         guard let url = URL(string: path, relativeTo: baseURL) else {
             throw MergeGongError("URL non valido: \(path)")
         }
+        return try get(url: url)
+    }
+
+    func get(url: URL) throws -> Data {
         var request = URLRequest(url: url, timeoutInterval: 20)
         request.setValue(authorization, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")

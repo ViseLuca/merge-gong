@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let gong = Gong()
     private let popup = GongPopup()
     private let poller = Poller()
+    private let updates = UpdateController()
     private let worker = DispatchQueue(label: "merge-gong.connect")
     private lazy var statusMenu = StatusMenu { [unowned self] in menuState }
 
@@ -32,6 +33,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             connect()
         }
+        updates.start()
+        LoginItem.restore(wanted: settings.openAtLogin)
     }
 
     private var enabled: Set<ProviderKind> {
@@ -40,7 +43,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var menuState: MenuState {
         MenuState(watched: settings.repos, knownRepos: knownRepos, enabled: enabled, branch: settings.branch,
-                  repoErrors: repoErrors, providerErrors: providerErrors, recent: tracker.recent)
+                  repoErrors: repoErrors, providerErrors: providerErrors, recent: tracker.recent,
+                  version: updates.version, update: updates.state,
+                  openAtLogin: LoginItem.isAvailable ? LoginItem.isEnabled : nil)
     }
 
     // MARK: Connecting
@@ -202,5 +207,27 @@ extension AppDelegate: StatusMenuActions {
         let fake = PullRequest(number: 0, title: L10n.testTitle, author: NSUserName(),
                                branch: settings.branch ?? "main", url: nil, mergedAt: Date())
         popup.show([Merge(repo: settings.repos.first ?? RepoRef(provider: .github, path: L10n.noRepo), pr: fake)])
+    }
+
+    func checkForUpdates() {
+        updates.check(manual: true)
+    }
+
+    func installUpdate() {
+        if case .available(let release) = updates.state { updates.install(release) }
+    }
+
+    func toggleOpenAtLogin() {
+        let enable = !LoginItem.isEnabled
+        do {
+            try LoginItem.setEnabled(enable)
+            settings.openAtLogin = enable
+        } catch {
+            return Prompt.message(L10n.loginItemFailed, info: error.localizedDescription)
+        }
+        if enable, LoginItem.needsApproval {
+            Prompt.message(L10n.loginNeedsApproval, info: L10n.loginNeedsApprovalInfo)
+            LoginItem.openSystemSettings()
+        }
     }
 }

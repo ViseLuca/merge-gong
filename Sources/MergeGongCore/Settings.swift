@@ -19,6 +19,13 @@ public final class Settings {
         set { defaults.set(newValue, forKey: "branch") }
     }
 
+    /// Whether the user asked to open the app at login. The system's Login Items are the real state; this only
+    /// lets the app register again if an update made the system forget it.
+    public var openAtLogin: Bool {
+        get { defaults.bool(forKey: "openAtLogin") }
+        set { defaults.set(newValue, forKey: "openAtLogin") }
+    }
+
     /// Connected services; nil until the first-launch setup has run.
     public var enabledProviders: Set<ProviderKind>? {
         get { defaults.stringArray(forKey: "providers").map { Set($0.compactMap(ProviderKind.init(rawValue:))) } }

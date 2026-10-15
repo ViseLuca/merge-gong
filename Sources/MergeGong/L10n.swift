@@ -22,6 +22,7 @@ enum L10n {
     static let disconnect = "Scollega"
     static let filterBranch = "Filtra branch…"
     static let strike = "Suona il gong"
+    static let openAtLogin = "Apri al login"
     static let quit = "Esci"
 
     // Prompts
@@ -41,6 +42,30 @@ enum L10n {
     static func connectionFailed(_ kind: ProviderKind) -> String { "Connessione a \(kind.displayName) non riuscita" }
     static func disconnectTitle(_ kind: ProviderKind) -> String { "Scollegare \(kind.displayName)?" }
     static let disconnectInfo = "Il token viene tolto dal Portachiavi e i repo di questo servizio non vengono più ascoltati."
+
+    // Login item
+    static let loginItemFailed = "Impossibile cambiare l'apertura al login"
+    static let loginNeedsApproval = "Da attivare in Impostazioni di Sistema"
+    static let loginNeedsApprovalInfo = "Merge Gong è negli Elementi login ma è spento. Accendilo nella finestra che si apre."
+
+    // Updates
+    static func checkUpdates(_ version: String) -> String { "Controlla aggiornamenti… (\(version))" }
+    static func installUpdate(_ version: String) -> String { "⬆️ Aggiorna alla \(version)" }
+    static let updating = "Aggiornamento in corso…"
+    static func updateAvailable(_ version: String) -> String { "È disponibile Merge Gong \(version)" }
+    static func updateInfo(current: String) -> String {
+        "Hai la \(current). L'aggiornamento si scarica da GitHub e l'app si riavvia da sola. Dopo, macOS potrebbe chiedere di nuovo l'accesso al Portachiavi."
+    }
+    static let updateNow = "Aggiorna ora"
+    static let upToDate = "Merge Gong è aggiornato"
+    static func upToDateInfo(_ version: String) -> String { "Hai l'ultima versione (\(version))." }
+    static let updateCheckFailed = "Controllo aggiornamenti non riuscito"
+    static let updateFailed = "Aggiornamento non riuscito"
+    static let openReleasePage = "Apri la release"
+    static let cannotUpdate = "Merge Gong non può aggiornarsi da solo"
+    static let updateByHand = "Non ha i permessi per sostituirsi nella sua cartella. Scarica MergeGong.zip dalla pagina della release che si apre e sostituisci l'app."
+    static let updateInstalled = "Aggiornamento installato"
+    static let reopenByHand = "Riapri Merge Gong per usare la nuova versione."
 }
 
 extension ProviderKind {

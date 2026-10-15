@@ -59,7 +59,7 @@ This needs the Xcode Command Line Tools (`xcode-select --install`).
 |----------------------|-----------------------------------------------------------|
 | `./build.sh`         | Builds `build/Merge Gong.app` (universal binary)          |
 | `./build.sh install` | Builds, copies to `~/Applications` and launches it        |
-| `./build.sh dist`    | Builds and zips it into `build/MergeGong.zip` for sharing |
+| `./build.sh dist 1.0.4` | Builds version 1.0.4 and zips it into `build/MergeGong.zip` for a release |
 | `./build.sh test`    | Runs the tests                                            |
 
 ## Usage
@@ -73,6 +73,8 @@ Everything lives in the 🔔 menu bar icon (the menu is in Italian, gong is univ
 | **Servizi collegati**       | Connect, reconfigure or disconnect each service.       |
 | **Filtra branch…**          | Only gong for merges into this base branch. Empty = all.       |
 | **Suona il gong**           | Test strike (⌘G).                                              |
+| **Apri al login**           | Tick to start Merge Gong when you log in.                      |
+| **Controlla aggiornamenti…** | Checks GitHub for a newer release; becomes **⬆️ Aggiorna alla x.y.z** when there is one. |
 | **Ultimi merge**            | Latest merged PRs across watched repos. Click to open.         |
 | **Esci**                    | Quit (⌘Q).                                                     |
 
@@ -96,21 +98,37 @@ Errors (missing `gh`, wrong token, unknown repo, …) show up in the menu with a
 
 ![img.png](img.png)
 
+## Updates
+
+At launch and every 6 hours Merge Gong asks GitHub for the [latest release](https://github.com/ViseLuca/merge-gong/releases/latest).
+When it finds a newer one it offers to install it: it downloads `MergeGong.zip`, checks it against the SHA-256
+GitHub publishes, makes sure it holds Merge Gong at the release's version with a valid signature, swaps it in
+place of the running app and relaunches. If the app sits in a folder it cannot write, it opens the release page instead.
+
+Versions 1.0.3 and older have no updater: install the next release once by hand.
+
+### Releasing
+
+The version comes from the build, not from `Info.plist`, so it always matches the tag:
+
+```sh
+./build.sh dist 1.0.4
+gh release create 1.0.4 build/MergeGong.zip
+```
+
+The asset must be called `MergeGong.zip`. Local builds (`./build.sh`, `./build.sh install`) take the latest git tag.
+
 ## Project layout
 
 A Swift package with no dependencies:
 
 | Path                       | What                                                                    |
 |----------------------------|-------------------------------------------------------------------------|
-| `Sources/MergeGongCore`    | Services (`Providers/`), Keychain and 1Password, settings, merge tracking. No AppKit. |
+| `Sources/MergeGongCore`    | Services (`Providers/`), Keychain and 1Password, settings, merge tracking, self-update (`Update/`). No AppKit. |
 | `Sources/MergeGong`        | The menu bar app: polling, menu, setup dialogs, popup, gong synth.      |
 | `Tests/MergeGongCoreTests` | API decoding, merge tracking, settings migration.                       |
 
 Adding a service means one new `Provider` in `Sources/MergeGongCore/Providers` and a case in `ProviderKind`.
-
-## Start at login
-
-System Settings → General → Login Items → **+** → pick `Merge Gong.app`.
 
 ## License
 
