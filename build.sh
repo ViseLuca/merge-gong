@@ -60,6 +60,8 @@ mkdir -p "$APP/Contents/Resources"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
 codesign --force --sign - "$APP"
+# The bundle folder keeps the date it was first created, and Finder caches the icon by it.
+touch "$APP"
 echo "Built $APP $VERSION"
 
 case "${1:-}" in

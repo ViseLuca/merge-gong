@@ -1,3 +1,4 @@
+import CoreServices
 import CryptoKit
 import Foundation
 
@@ -66,6 +67,10 @@ public struct Updater {
         }
         _ = try ProcessRunner.run("/usr/bin/codesign", ["--verify", "--deep", "--strict", app.path])
         _ = try files.replaceItemAt(appURL, withItemAt: app)
+        // Finder and the Dock cache the icon by the bundle's date, which the zip keeps from the build:
+        // without a fresh date and a new registration they go on showing the old icon.
+        try? files.setAttributes([.modificationDate: Date()], ofItemAtPath: appURL.path)
+        LSRegisterURL(appURL as CFURL, true)
     }
 
     private static func version(of bundle: Bundle) -> AppVersion? {
