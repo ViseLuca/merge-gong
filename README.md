@@ -58,9 +58,10 @@ This needs the Xcode Command Line Tools (`xcode-select --install`).
 | Command              | What it does                                              |
 |----------------------|-----------------------------------------------------------|
 | `./build.sh`         | Builds `build/Merge Gong.app` (universal binary)          |
-| `./build.sh install` | Builds, copies to `~/Applications` and launches it        |
+| `./build.sh install` | Builds, copies to `/Applications` and relaunches it      |
 | `./build.sh dist 1.0.4` | Builds version 1.0.4 and zips it into `build/MergeGong.zip` for a release |
 | `./build.sh test`    | Runs the tests                                            |
+| `./build.sh icon`    | Redraws `Resources/AppIcon.icns` from `scripts/make-icon.swift` |
 
 ## Usage
 
