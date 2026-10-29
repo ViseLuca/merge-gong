@@ -1,9 +1,10 @@
 #!/bin/sh
 # Builds build/Merge Gong.app (universal, macOS 13+).
 #   ./build.sh          build only
-#   ./build.sh install  build and copy into ~/Applications
+#   ./build.sh install  build, copy into /Applications and relaunch
 #   ./build.sh dist 1.2.0  build version 1.2.0 and zip it into build/MergeGong.zip, ready for a release
 #   ./build.sh test     run the tests
+#   ./build.sh icon     redraw Resources/AppIcon.icns from scripts/make-icon.swift
 set -eu
 cd "$(dirname "$0")"
 
@@ -17,6 +18,19 @@ if [ "${1:-}" = test ]; then
   exec swift test --build-system native \
     -Xswiftc -F -Xswiftc "$FW" -Xlinker -F -Xlinker "$FW" \
     -Xlinker -rpath -Xlinker "$FW" -Xlinker -rpath -Xlinker "$LIB"
+fi
+
+if [ "${1:-}" = icon ]; then
+  SET="$(mktemp -d)/AppIcon.iconset"
+  mkdir -p "$SET" Resources
+  swift scripts/make-icon.swift "$SET/icon_512x512@2x.png"
+  for PX in 16 32 128 256 512; do
+    sips -z "$PX" "$PX" "$SET/icon_512x512@2x.png" --out "$SET/icon_${PX}x${PX}.png" >/dev/null
+    [ "$PX" = 512 ] || sips -z $((PX * 2)) $((PX * 2)) "$SET/icon_512x512@2x.png" --out "$SET/icon_${PX}x${PX}@2x.png" >/dev/null
+  done
+  iconutil -c icns "$SET" -o Resources/AppIcon.icns
+  echo "Drawn Resources/AppIcon.icns"
+  exit
 fi
 
 # The version the app reports, which the updater compares with the GitHub release tags.
@@ -42,16 +56,19 @@ lipo -create \
   -output "$BIN"
 
 cp Info.plist "$APP/Contents/Info.plist"
+mkdir -p "$APP/Contents/Resources"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
 codesign --force --sign - "$APP"
 echo "Built $APP $VERSION"
 
 case "${1:-}" in
   install)
-    mkdir -p "$HOME/Applications"
-    ditto "$APP" "$HOME/Applications/Merge Gong.app"
-    echo "Installed in $HOME/Applications/Merge Gong.app"
-    open "$HOME/Applications/Merge Gong.app"
+    # The same place the downloaded app goes, so there is only ever one copy; quit it so the new build runs.
+    osascript -e 'quit app id "io.github.viseluca.merge-gong"' 2>/dev/null || true
+    ditto "$APP" "/Applications/Merge Gong.app"
+    echo "Installed in /Applications/Merge Gong.app"
+    open "/Applications/Merge Gong.app"
     ;;
   dist)
     ditto -c -k --keepParent "$APP" build/MergeGong.zip
