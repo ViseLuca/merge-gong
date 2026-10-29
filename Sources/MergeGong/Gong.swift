@@ -1,8 +1,9 @@
+import AppKit
 import AVFoundation
 
 /// A gong strike synthesized at launch: no audio files, just inharmonic partials and a noisy attack.
 final class Gong {
-    private let engine = AVAudioEngine()
+    private var engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
     private let buffer: AVAudioPCMBuffer
 
@@ -50,11 +51,44 @@ final class Gong {
 
         engine.attach(player)
         engine.connect(player, to: engine.mainMixerNode, format: format)
+
+        // Sleep/wake or an output device change (Bluetooth, HDMI, sample rate) leaves the engine
+        // stopped or bound to a device that no longer exists: rebuild it on the next strike.
+        NotificationCenter.default.addObserver(
+            forName: .AVAudioEngineConfigurationChange, object: nil, queue: .main
+        ) { [weak self] note in
+            guard let self, note.object as? AVAudioEngine === self.engine else { return }
+            self.rebuild()
+        }
+        NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
+        ) { [weak self] _ in self?.rebuild() }
     }
 
     func play() {
-        if !engine.isRunning { try? engine.start() }
+        if !engine.isRunning {
+            do {
+                try engine.start()
+            } catch {
+                NSLog("Merge Gong: audio engine failed to start (%@), rebuilding", error.localizedDescription)
+                rebuild()
+                do { try engine.start() } catch {
+                    NSLog("Merge Gong: audio engine failed to start again (%@)", error.localizedDescription)
+                    return
+                }
+            }
+        }
         player.scheduleBuffer(buffer, at: nil, options: .interrupts)
         player.play()
+    }
+
+    /// Replaces the engine with a fresh one wired to the current default output device.
+    private func rebuild() {
+        player.stop()
+        engine.stop()
+        engine.detach(player)
+        engine = AVAudioEngine()
+        engine.attach(player)
+        engine.connect(player, to: engine.mainMixerNode, format: buffer.format)
     }
 }
