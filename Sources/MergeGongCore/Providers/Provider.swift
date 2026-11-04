@@ -19,7 +19,7 @@ public enum ProviderFactory {
             return GitLabProvider(baseURL: try serverURL(kind, settings: settings), token: try token(kind, secrets: secrets))
         case .bitbucketCloud:
             guard let email = settings.account(for: kind), let token = try secrets.token(for: kind) else {
-                throw MergeGongError("\(kind.displayName) non configurato")
+                throw MergeGongError(tr("\(kind.displayName) non configurato", "\(kind.displayName) not configured"))
             }
             return BitbucketCloudProvider(email: email, token: token)
         case .bitbucketServer:
@@ -28,13 +28,13 @@ public enum ProviderFactory {
     }
 
     private static func serverURL(_ kind: ProviderKind, settings: Settings) throws -> URL {
-        guard let address = settings.account(for: kind) else { throw MergeGongError("\(kind.displayName) non configurato") }
-        guard let url = HTTPClient.baseURL(from: address) else { throw MergeGongError("URL del server non valido: \(address)") }
+        guard let address = settings.account(for: kind) else { throw MergeGongError(tr("\(kind.displayName) non configurato", "\(kind.displayName) not configured")) }
+        guard let url = HTTPClient.baseURL(from: address) else { throw MergeGongError(tr("URL del server non valido: \(address)", "Invalid server URL: \(address)")) }
         return url
     }
 
     private static func token(_ kind: ProviderKind, secrets: SecretStore) throws -> String {
-        guard let token = try secrets.token(for: kind) else { throw MergeGongError("\(kind.displayName) non configurato") }
+        guard let token = try secrets.token(for: kind) else { throw MergeGongError(tr("\(kind.displayName) non configurato", "\(kind.displayName) not configured")) }
         return token
     }
 }

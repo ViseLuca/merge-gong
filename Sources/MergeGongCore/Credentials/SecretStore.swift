@@ -25,7 +25,7 @@ public struct SecretStore {
         guard let value = try keychain.get(kind.rawValue) else { return nil }
         guard Self.isOnePasswordReference(value) else { return value }
         guard let op = ProcessRunner.find("op") else {
-            throw MergeGongError("1Password CLI (op) non trovato. Installa con: brew install 1password-cli")
+            throw MergeGongError(tr("1Password CLI (op) non trovato. Installa con: brew install 1password-cli", "1Password CLI (op) not found. Install it with: brew install 1password-cli"))
         }
         return String(decoding: try ProcessRunner.run(op, ["read", "--no-newline", value]), as: UTF8.self)
     }

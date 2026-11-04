@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         MenuState(watched: settings.repos, knownRepos: knownRepos, enabled: enabled, branch: settings.branch,
                   repoErrors: repoErrors, providerErrors: providerErrors, recent: tracker.recent,
                   version: updates.version, update: updates.state,
-                  openAtLogin: LoginItem.isAvailable ? LoginItem.isEnabled : nil)
+                  openAtLogin: LoginItem.isAvailable ? LoginItem.isEnabled : nil, language: settings.language)
     }
 
     // MARK: Connecting
@@ -215,6 +215,12 @@ extension AppDelegate: StatusMenuActions {
 
     func installUpdate() {
         if case .available(let release) = updates.state { updates.install(release) }
+    }
+
+    /// Texts are built on demand, so the menu and the next alerts switch at once; repo errors already shown
+    /// switch at the next poll.
+    func setLanguage(_ language: Language?) {
+        settings.language = language
     }
 
     func toggleOpenAtLogin() {

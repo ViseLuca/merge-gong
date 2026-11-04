@@ -16,7 +16,7 @@ public struct GitHubProvider: Provider {
 
     private func api(_ endpoint: String) throws -> Data {
         guard let gh = ProcessRunner.find("gh") else {
-            throw MergeGongError("gh non trovato. Installa con: brew install gh")
+            throw MergeGongError(tr("gh non trovato. Installa con: brew install gh", "gh not found. Install it with: brew install gh"))
         }
         return try ProcessRunner.run(gh, ["api", endpoint])
     }

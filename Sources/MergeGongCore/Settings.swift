@@ -26,6 +26,12 @@ public final class Settings {
         set { defaults.set(newValue, forKey: "openAtLogin") }
     }
 
+    /// The language picked in the menu; nil follows the system.
+    public var language: Language? {
+        get { defaults.string(forKey: "language").flatMap(Language.init(rawValue:)) }
+        set { defaults.set(newValue?.rawValue, forKey: "language") }
+    }
+
     /// Connected services; nil until the first-launch setup has run.
     public var enabledProviders: Set<ProviderKind>? {
         get { defaults.stringArray(forKey: "providers").map { Set($0.compactMap(ProviderKind.init(rawValue:))) } }
