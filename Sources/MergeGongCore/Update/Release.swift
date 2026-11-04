@@ -24,10 +24,10 @@ public struct Release: Equatable {
     static func decode(_ data: Data) throws -> Release {
         let payload = try JSONDecoder.api().decode(Payload.self, from: data)
         guard let version = AppVersion(payload.tagName) else {
-            throw MergeGongError("Versione della release non valida: \(payload.tagName)")
+            throw MergeGongError(tr("Versione della release non valida: \(payload.tagName)", "Invalid release version: \(payload.tagName)"))
         }
         guard let asset = payload.assets.first(where: { $0.name == Updater.assetName }) else {
-            throw MergeGongError("La release \(payload.tagName) non contiene \(Updater.assetName)")
+            throw MergeGongError(tr("La release \(payload.tagName) non contiene \(Updater.assetName)", "Release \(payload.tagName) does not contain \(Updater.assetName)"))
         }
         let sha256 = asset.digest.flatMap { $0.hasPrefix("sha256:") ? String($0.dropFirst("sha256:".count)) : nil }
         return Release(version: version, page: payload.htmlUrl, download: asset.browserDownloadUrl, sha256: sha256)

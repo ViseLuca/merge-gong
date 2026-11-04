@@ -11,6 +11,7 @@ protocol StatusMenuActions: AnyObject {
     func checkForUpdates()
     func installUpdate()
     func toggleOpenAtLogin()
+    func setLanguage(_ language: Language?)
 }
 
 /// What the menu shows, read each time it opens.
@@ -27,6 +28,8 @@ struct MenuState {
     var update: UpdateController.State
     /// Nil when the app cannot be a login item.
     var openAtLogin: Bool?
+    /// The language picked in the menu; nil follows the system.
+    var language: Language?
 }
 
 /// The 🔔 menu, rebuilt every time it opens.
@@ -79,6 +82,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
             item.state = openAtLogin ? .on : .off
             menu.addItem(item)
         }
+        menu.addItem(submenu(L10n.language, languageMenu(state)))
         if let item = updateItem(state) { menu.addItem(item) }
         menu.addItem(action(L10n.github) { NSWorkspace.shared.open(Updater.homepage) })
         let quit = NSMenuItem(title: L10n.quit, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -123,6 +127,18 @@ final class StatusMenu: NSObject, NSMenuDelegate {
             }
             let item = submenu(kind.displayName, options)
             item.state = state.enabled.contains(kind) ? .on : .off
+            menu.addItem(item)
+        }
+        return menu
+    }
+
+    /// Automatic first, then each language by its own name, so it can be found whatever the current one is.
+    private func languageMenu(_ state: MenuState) -> NSMenu {
+        let menu = NSMenu()
+        let choices: [(String, Language?)] = [(L10n.languageAuto, nil)] + Language.allCases.map { ($0.nativeName, $0) }
+        for (title, language) in choices {
+            let item = action(title) { [weak self] in self?.actions?.setLanguage(language) }
+            item.state = state.language == language ? .on : .off
             menu.addItem(item)
         }
         return menu

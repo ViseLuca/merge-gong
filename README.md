@@ -42,7 +42,7 @@ It downloads `MergeGong.zip` from the latest release, checks its SHA-256, copies
 files downloaded with `curl` are not quarantined. Run it again any time to reinstall the latest version.
 
 A 🔔 appears in the menu bar and asks what to connect (GitHub, GitLab, Bitbucket Cloud,
-Bitbucket Data Center, any mix). You can change it later from **Servizi collegati**.
+Bitbucket Data Center, any mix). You can change it later from **Connected services**.
 
 ### Manual download
 
@@ -77,20 +77,23 @@ This needs the Xcode Command Line Tools (`xcode-select --install`).
 
 ## Usage
 
-Everything lives in the 🔔 menu bar icon (the menu is in Italian, gong is universal):
+Everything lives in the 🔔 menu bar icon. The menu speaks English or Italian: it follows the system
+language (Italian on Italian systems, English otherwise) and can be switched from **Language / Lingua**.
+The gong is universal.
 
-| Menu item                   | Meaning                                                        |
-|-----------------------------|----------------------------------------------------------------|
-| **Repo da ascoltare**       | Tick the repos to watch. Lists your recent repos per service.  |
-| ↳ **Aggiungi altro repo…**  | Add any repo by name (`owner/name`, `group/subgroup/project`, `workspace/repo`, `PROJECT/repo`). |
-| **Servizi collegati**       | Connect, reconfigure or disconnect each service.       |
-| **Filtra branch…**          | Only gong for merges into this base branch. Empty = all.       |
-| **Suona il gong**           | Test strike (⌘G).                                              |
-| **Apri al login**           | Tick to start Merge Gong when you log in.                      |
-| **Controlla aggiornamenti…** | Checks GitHub for a newer release; becomes **⬆️ Aggiorna alla x.y.z** when there is one. |
-| **Merge Gong su GitHub**    | Opens this repository.                                         |
-| **Ultimi merge**            | Latest merged PRs across watched repos. Click to open.         |
-| **Esci**                    | Quit (⌘Q).                                                     |
+| Menu item (English / Italian)                              | Meaning                                                        |
+|------------------------------------------------------------|----------------------------------------------------------------|
+| **Repos to watch** / **Repo da ascoltare**                 | Tick the repos to watch. Lists your recent repos per service.  |
+| ↳ **Add another repo…** / **Aggiungi altro repo…**         | Add any repo by name (`owner/name`, `group/subgroup/project`, `workspace/repo`, `PROJECT/repo`). |
+| **Connected services** / **Servizi collegati**             | Connect, reconfigure or disconnect each service.               |
+| **Filter branch…** / **Filtra branch…**                    | Only gong for merges into this base branch. Empty = all.       |
+| **Strike the gong** / **Suona il gong**                    | Test strike (⌘G).                                              |
+| **Open at login** / **Apri al login**                      | Tick to start Merge Gong when you log in.                      |
+| **Language** / **Lingua**                                  | Automatic (system), Italiano or English.                       |
+| **Check for updates…** / **Controlla aggiornamenti…**      | Checks GitHub for a newer release; becomes **⬆️ Update to x.y.z** when there is one. |
+| **Merge Gong on GitHub** / **Merge Gong su GitHub**        | Opens this repository.                                         |
+| **Recent merges** / **Ultimi merge**                       | Latest merged PRs across watched repos. Click to open.         |
+| **Quit** / **Esci**                                        | Quit (⌘Q).                                                     |
 
 Errors (missing `gh`, wrong token, unknown repo, …) show up in the menu with a ⚠️.
 

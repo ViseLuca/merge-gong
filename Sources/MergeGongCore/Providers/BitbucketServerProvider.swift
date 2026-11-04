@@ -11,7 +11,7 @@ public struct BitbucketServerProvider: Provider {
 
     public func merges(repo path: String) throws -> [PullRequest] {
         let parts = path.split(separator: "/")
-        guard parts.count == 2 else { throw MergeGongError("Repo non valido: \(path)") }
+        guard parts.count == 2 else { throw MergeGongError(tr("Repo non valido: \(path)", "Invalid repo: \(path)")) }
         return try Self.decodeMerges(client.get(
             "rest/api/1.0/projects/\(parts[0])/repos/\(parts[1])/pull-requests?state=MERGED&order=NEWEST&limit=30"))
     }

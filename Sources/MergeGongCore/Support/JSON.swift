@@ -8,7 +8,7 @@ extension JSONDecoder {
         decoder.dateDecodingStrategy = .custom { decoder in
             let string = try decoder.singleValueContainer().decode(String.self)
             guard let date = parseISODate(string) else {
-                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Data non valida: \(string)"))
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: tr("Data non valida: \(string)", "Invalid date: \(string)")))
             }
             return date
         }

@@ -49,7 +49,7 @@ public struct Updater {
         let data = try client.get(url: release.download)
         if let expected = release.sha256 {
             let actual = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
-            guard actual == expected.lowercased() else { throw MergeGongError("Download corrotto: checksum diverso") }
+            guard actual == expected.lowercased() else { throw MergeGongError(tr("Download corrotto: checksum diverso", "Corrupted download: checksum mismatch")) }
         }
         let zip = staging.appendingPathComponent(Self.assetName)
         try data.write(to: zip)
@@ -58,14 +58,14 @@ public struct Updater {
         guard let app = try files.contentsOfDirectory(at: staging, includingPropertiesForKeys: nil)
                   .first(where: { $0.pathExtension == "app" }),
               let downloaded = Bundle(url: app) else {
-            throw MergeGongError("Lo zip della release non contiene l'app")
+            throw MergeGongError(tr("Lo zip della release non contiene l'app", "The release zip does not contain the app"))
         }
         guard downloaded.bundleIdentifier == bundle.bundleIdentifier else {
-            throw MergeGongError("Lo zip della release contiene un'altra app: \(downloaded.bundleIdentifier ?? "?")")
+            throw MergeGongError(tr("Lo zip della release contiene un'altra app: \(downloaded.bundleIdentifier ?? "?")", "The release zip contains another app: \(downloaded.bundleIdentifier ?? "?")"))
         }
         // An app that still reports an older version would be offered again on every check.
         guard let version = Self.version(of: downloaded), version == release.version else {
-            throw MergeGongError("La release \(release.version) contiene l'app versione \(Self.version(of: downloaded)?.description ?? "?")")
+            throw MergeGongError(tr("La release \(release.version) contiene l'app versione \(Self.version(of: downloaded)?.description ?? "?")", "Release \(release.version) contains app version \(Self.version(of: downloaded)?.description ?? "?")"))
         }
         _ = try ProcessRunner.run("/usr/bin/codesign", ["--verify", "--deep", "--strict", app.path])
         _ = try files.replaceItemAt(appURL, withItemAt: app)

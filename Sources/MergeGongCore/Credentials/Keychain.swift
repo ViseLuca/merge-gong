@@ -44,8 +44,8 @@ public struct Keychain {
 
     private func check(_ status: OSStatus) throws {
         guard status == errSecSuccess else {
-            let reason = SecCopyErrorMessageString(status, nil) as String? ?? "codice \(status)"
-            throw MergeGongError("Portachiavi: \(reason)")
+            let reason = SecCopyErrorMessageString(status, nil) as String? ?? tr("codice \(status)", "code \(status)")
+            throw MergeGongError(tr("Portachiavi: \(reason)", "Keychain: \(reason)"))
         }
     }
 }

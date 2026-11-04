@@ -25,7 +25,7 @@ struct HTTPClient {
     /// `path` is relative to `baseURL` and may carry a query string.
     func get(_ path: String) throws -> Data {
         guard let url = URL(string: path, relativeTo: baseURL) else {
-            throw MergeGongError("URL non valido: \(path)")
+            throw MergeGongError(tr("URL non valido: \(path)", "Invalid URL: \(path)"))
         }
         return try get(url: url)
     }
