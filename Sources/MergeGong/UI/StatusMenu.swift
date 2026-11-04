@@ -80,6 +80,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
             menu.addItem(item)
         }
         if let item = updateItem(state) { menu.addItem(item) }
+        menu.addItem(action(L10n.github) { NSWorkspace.shared.open(Updater.homepage) })
         let quit = NSMenuItem(title: L10n.quit, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quit.target = NSApp
         menu.addItem(quit)
