@@ -29,19 +29,31 @@ when it connects.
 
 ## Install
 
-### Download (no Xcode needed)
+### One line in Terminal (recommended)
+
+Open Terminal, paste this line and press Enter:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ViseLuca/merge-gong/main/scripts/install.sh | bash
+```
+
+It downloads `MergeGong.zip` from the latest release, checks its SHA-256, copies the app into
+`/Applications` (or `~/Applications` if that is not writable) and opens it. No Gatekeeper warning:
+files downloaded with `curl` are not quarantined. Run it again any time to reinstall the latest version.
+
+A 🔔 appears in the menu bar and asks what to connect (GitHub, GitLab, Bitbucket Cloud,
+Bitbucket Data Center, any mix). You can change it later from **Servizi collegati**.
+
+### Manual download
 
 1. Download **[MergeGong.zip](https://github.com/ViseLuca/merge-gong/releases/latest/download/MergeGong.zip)** from the [latest release](https://github.com/ViseLuca/merge-gong/releases/latest).
 2. Unzip it and move `Merge Gong.app` to `Applications`.
-3. The app is ad-hoc signed, not notarized, so macOS blocks it on first launch. Unblock it once with:
+3. The app is not notarized, so macOS blocks it on first launch. Try to open it, then go to
+   System Settings → Privacy & Security → **Open Anyway**. Or unblock it from Terminal:
 
    ```sh
    xattr -dr com.apple.quarantine "/Applications/Merge Gong.app"
    ```
-
-   or try to open it, then go to System Settings → Privacy & Security → **Open Anyway**.
-4. Open it: a 🔔 appears in the menu bar and asks what to connect (GitHub, GitLab, Bitbucket Cloud,
-   Bitbucket Data Center, any mix). You can change it later from **Servizi collegati**.
 
 ### From source
 
@@ -76,6 +88,7 @@ Everything lives in the 🔔 menu bar icon (the menu is in Italian, gong is univ
 | **Suona il gong**           | Test strike (⌘G).                                              |
 | **Apri al login**           | Tick to start Merge Gong when you log in.                      |
 | **Controlla aggiornamenti…** | Checks GitHub for a newer release; becomes **⬆️ Aggiorna alla x.y.z** when there is one. |
+| **Merge Gong su GitHub**    | Opens this repository.                                         |
 | **Ultimi merge**            | Latest merged PRs across watched repos. Click to open.         |
 | **Esci**                    | Quit (⌘Q).                                                     |
 

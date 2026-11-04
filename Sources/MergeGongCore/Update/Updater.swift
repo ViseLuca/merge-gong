@@ -7,6 +7,8 @@ import Foundation
 public struct Updater {
     static let repo = "ViseLuca/merge-gong"
     static let assetName = "MergeGong.zip"
+    /// The project page, linked from the menu.
+    public static let homepage = URL(string: "https://github.com/\(repo)")!
 
     private let bundle: Bundle
     private let client = HTTPClient(baseURL: URL(string: "https://api.github.com/")!, authorization: nil)

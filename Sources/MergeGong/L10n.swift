@@ -23,6 +23,7 @@ enum L10n {
     static let filterBranch = "Filtra branch…"
     static let strike = "Suona il gong"
     static let openAtLogin = "Apri al login"
+    static let github = "Merge Gong su GitHub"
     static let quit = "Esci"
 
     // Prompts
